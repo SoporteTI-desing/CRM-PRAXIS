@@ -113,7 +113,7 @@
 <body>
   <header>
     <img src="logo.png" alt="INNVIDA">
-    <h1>CRM · INNVIDA — v3 híbrido</h1>
+    <h1>CRM · INNVIDA — v3 Firestore</h1>
     <div class="right"><a class="link" href="registrar.html">➕ Registrar</a></div>
   </header>
 
@@ -127,7 +127,7 @@
     <!-- MÉDICOS -->
     <section id="medicos" class="tabcontent">
       <div class="card row">
-        <div><strong>Base de Médicos</strong><div class="muted">Lectura desde medicos.json (y añadidos locales)</div></div>
+        <div><strong>Base de Médicos</strong><div class="muted">Lectura en tiempo real desde Firestore</div></div>
         <div class="row right">
           <span class="badge" id="medCount">—</span>
           <button class="btn" id="refreshMedicos">Refrescar</button>
@@ -186,7 +186,7 @@
           <thead><tr>
             <th>Nombre</th><th>Teléfono</th><th>Dirección</th><th>Hospital</th><th>Red Social</th><th>Especialidad</th><th>Base</th><th>Estado</th><th>Región</th><th>Gerente / KAM</th><th class="center">Seguimiento</th>
           </tr></thead>
-          <tbody></tbody>
+          <tbody id="tbody-medicos"></tbody>
         </table>
       </div>
       <div class="row" style="justify-content:flex-end;">

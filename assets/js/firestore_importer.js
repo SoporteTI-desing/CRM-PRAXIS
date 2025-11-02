@@ -1,4 +1,4 @@
-// Importador de medicos.json a Firestore (ejecuta una sola vez)
+// removed medicos.json fetch
 import { getFirestore, collection, addDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
