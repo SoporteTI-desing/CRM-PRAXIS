@@ -2,25 +2,33 @@
 // save_med_index.js — guarda el formulario superior "Registrar nuevo médico" en Firestore
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 (function(){
   function $(id){ return document.getElementById(id); }
   function trim(v){ return (v||'').toString().trim(); }
   function slug(s){ return trim(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$|_/g,''); }
 
-  function init(){
-    var app = getApps()[0];
+  let app, db, auth, readyAuth = false;
+
+  function ensureFirebase(){
+    app = getApps()[0];
     if(!app && window.FIREBASE_CONFIG){
       app = initializeApp(window.FIREBASE_CONFIG);
+      console.log('[save_med] Firebase init OK');
     }
-    const auth = getAuth();
-    signInAnonymously(auth).catch(()=>{});
-    const db = getFirestore();
+    auth = getAuth();
+    try { signInAnonymously(auth).catch(()=>{}); } catch(_){}
+    onAuthStateChanged(auth, (u)=>{
+      readyAuth = !!u;
+      console.log('[save_med] auth:', u ? u.uid : null);
+    });
+    db = getFirestore();
+  }
 
-    const btn = document.getElementById('btnSaveMed');
-    if(!btn) return;
-    btn.addEventListener('click', async function(){
+  async function handleSave(){
+    try{
+      ensureFirebase();
       const payload = {
         nombre: trim($('m_nombre')?.value),
         telefono: trim($('m_tel')?.value),
@@ -38,17 +46,32 @@ import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/1
       if(!payload.nombre){
         alert('⚠️ Nombre es obligatorio'); return;
       }
-      const id = slug(payload.nombre + ' ' + payload.direccion || '');
+      // si no hay dirección, igual guardamos (slug con solo nombre)
+      const id = slug((payload.nombre||'') + ' ' + (payload.direccion||''));
+      console.log('[save_med] setDoc medicos/', id, payload);
       await setDoc(doc(db,'medicos', id), payload, { merge: true });
-      // mini toast
-      btn.textContent = "Guardado ✓"; setTimeout(()=> btn.textContent="Guardar médico", 1200);
-      // limpia
+      const btn = $('btnSaveMed');
+      if(btn){ btn.textContent = 'Guardado ✓'; setTimeout(()=> btn.textContent='Guardar médico', 1200); }
       ['m_nombre','m_tel','m_dir','m_hosp','m_red','m_esp','m_estado','m_region','m_kam','m_base'].forEach(i=>{ const el=$(i); if(el) el.value=''; });
-      // opcional: emitir evento para que otros paneles refresquen
       document.dispatchEvent(new CustomEvent('medico:guardado', { detail: { id, payload } }));
-    });
+    }catch(e){
+      console.error('[save_med] ERROR:', e);
+      alert('❌ No se pudo guardar en Firestore:\n' + (e && e.message ? e.message : e));
+    }
   }
 
-  if(document.readyState!=='loading') init();
-  else document.addEventListener('DOMContentLoaded', init);
+  // Delegación por si el botón aparece después
+  document.addEventListener('click', (e)=>{
+    const b = e.target.closest && e.target.closest('#btnSaveMed');
+    if(!b) return;
+    e.preventDefault();
+    handleSave();
+  });
+
+  // Si el botón ya existe al cargar, dejamos un log para confirmar enganche
+  if(document.getElementById('btnSaveMed')){
+    console.log('[save_med] Listener activo en #btnSaveMed');
+  } else {
+    console.log('[save_med] Esperando #btnSaveMed (delegación activa)');
+  }
 })();
