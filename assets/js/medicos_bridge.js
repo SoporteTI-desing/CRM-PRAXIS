@@ -1,6 +1,6 @@
 
 import {
-  collection, onSnapshot, query, orderBy, addDoc, serverTimestamp,
+  collection, collectionGroup, onSnapshot, query, orderBy, addDoc, serverTimestamp,
   doc, getDoc, setDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
@@ -62,7 +62,7 @@ function hydrateFilters(){
 }
 
 function listenFirestore(){
-  const q = query(collection(db,"medicos"), orderBy("nombre"));
+  const q = query(collectionGroup(db,"medicos"), orderBy("createdAt","desc"));
   onSnapshot(q, (snap)=>{
     const fs = [];
     snap.forEach(d => {
