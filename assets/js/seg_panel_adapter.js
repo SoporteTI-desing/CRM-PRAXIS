@@ -281,36 +281,6 @@ document.getElementById("saveModal")?.addEventListener("click", async () => {
   }
 });
 
-          if(!_docId){
-            const s2 = await getDocs(query(collection(db,"medicos"), where("nombre","==", nombre), limit(1)));
-            s2.forEach(d=>{ if(!_docId) _docId = d.id; });
-          }
-        }
-      } catch(e) { console.warn("[saveModal] fallback resolver:", e); }
-    }
-    if (!_docId) { alert("No tengo el ID del médico."); return; }
-    __seg_docId = _docId;
-    const estatus = document.getElementById("segStatus")?.value || "Contactado";
-    const fecha   = document.getElementById("segFecha")?.value || null;
-    const notas   = document.getElementById("segNotas")?.value?.trim() || "";
-    const kam     = document.getElementById("segKAM")?.value?.trim() || "";
-
-    const fs = await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js");
-    const db = fs.getFirestore();
-    await fs.addDoc(
-      fs.collection(db, "medicos", __seg_docId, "seguimientos"),
-      { estatus, comentarios: notas, usuario: kam, fecha, createdAt: fs.serverTimestamp() }
-    );
-    await fs.setDoc(fs.doc(db, "medicos", __seg_docId), { estatus, kam }, { merge: true });
-
-    const n = document.getElementById("segNotas"); if (n) n.value = "";
-    renderSeguimientos(__seg_docId);
-    console.log("[seguimiento] guardado para docId:", __seg_docId);
-  } catch (e) {
-    console.error("[seguimiento] error al guardar:", e);
-    alert("No pude guardar el seguimiento. Revisa la consola.");
-  }
-});
 
 async function renderSeguimientos(docId){
   try{
