@@ -43,3 +43,47 @@ import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/1
     // No hacemos nada aquí a propósito: seg_panel_adapter.js se encarga de abrir el panel
   });
 })();
+
+// --- Firestore REALTIME (no JSON fallback) ---
+import { getFirestore, collection, query, onSnapshot, getDocsFromServer } 
+  from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { initializeApp, getApps } 
+  from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+
+(function(){
+  const app = getApps()[0] || initializeApp(window.FIREBASE_CONFIG);
+  const db = getFirestore(app);
+
+  function updateCounter(total, fromCache){
+    const els = Array.from(document.querySelectorAll('#badgeMedicos, .badge-medicos')).slice(0,1);
+    if(els.length){ els[0].textContent = total + " médicos" + (fromCache ? " (caché)" : ""); }
+  }
+
+  const q = query(collection(db, "medicos"));
+  onSnapshot(q, { includeMetadataChanges: true }, (snap) => {
+    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const fromCache = snap.metadata.fromCache === true;
+    updateCounter(snap.size, fromCache);
+    // Guarda global + evento para otros módulos
+    window.__medicosDocs = docs;
+    document.dispatchEvent(new CustomEvent("medicos:snapshot", { detail: { docs, fromCache } }));
+    // Intenta render si hay función global
+    if (typeof window.renderMedicos === "function") {
+      try { window.renderMedicos(docs); } catch(_){}
+    }
+  });
+
+  // Exponer refresh forzado a red
+  window.forceMedicosFromServer = async function(){
+    const snap = await getDocsFromServer(q);
+    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateCounter(snap.size, false);
+    window.__medicosDocs = docs;
+    document.dispatchEvent(new CustomEvent("medicos:snapshot", { detail: { docs, fromCache:false } }));
+    if (typeof window.renderMedicos === "function") {
+      try { window.renderMedicos(docs); } catch(_){}
+    } else {
+      location.reload();
+    }
+  }
+})();
