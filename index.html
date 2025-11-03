@@ -6,108 +6,9 @@
   <title>CRM INNVIDA — Dinámico v3 (híbrido)</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="">
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js">
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js">
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <style>
     :root{ --azul:#0A497B; --bg:#0d1117; --card:#0f1623; --muted:#94a3b8; --text:#e5e7eb; --line:#1f2937; }
     *{ box-sizing:border-box } body{ margin:0; font-family:Inter,system-ui,Segoe UI,Arial; background:#0d1117; color:var(--text); }
@@ -207,40 +108,7 @@
   }
 </style>
 
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="assets/css/patch_hide_delete.css?v=1">
 </head>
 <body>
@@ -418,13 +286,7 @@
         <div id="map"></div>
       </div>
     </section>
-  
-<section class="card" style="margin-top:18px">
-  <h3 style="margin-top:0">📡 Realtime · Médicos (Firestore)</h3>
-  <div id="liveMedicos" style="font-size:14px; color:#cbd5e1">Cargando…</div>
-</section>
-
-</main>
+  </main>
 
   <!-- Modal seguimiento (solo Médicos) -->
   <div id="modalBackdrop" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);">
@@ -504,7 +366,7 @@ function renderMedicos(){
       <td>${r['Base']||r['base']||''}</td><td>${r['Estado']||r['estado']||''}</td><td>${r['Región']||r['Region']||r['region']||''}</td><td>${r['GERENTE/KAM']||r['KAM']||r['kam']||''}</td>
       <td class="center">
         <span class="dot ${(()=>{ const est=latestEstadoFor(nombre); return est?estadoColor(est):'gray'; })()}"></span>
-        <button class="btn ghost">+ Seguimiento</button>
+        <button class="btn btn-seg" data-name="${nombre}" data-dir="${dir}">+ Seguimiento</button>
       </td>`;
     tr.querySelector('button').addEventListener('click',()=> openModal({Nombre:nombre, KAM:(r['GERENTE/KAM']||r['KAM']||r['kam']||'')}));
     tbMed.appendChild(tr);
@@ -869,39 +731,6 @@ $$('.tab').forEach(tab=>tab.addEventListener('click',()=>{
   buildStats();
   renderSeguimiento();
 })();
-
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
 </script>
 
 <!-- Modal Registrar Cotización -->
@@ -966,39 +795,6 @@ $$('.tab').forEach(tab=>tab.addEventListener('click',()=>{
     });
   }
 })();
-
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
 </script>
 
 
@@ -1032,108 +828,9 @@ $$('.tab').forEach(tab=>tab.addEventListener('click',()=>{
 </section>
 
   <!-- Leaflet & Chart.js -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="">
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js">
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0">
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 
   <script>
   (function(){
@@ -1208,40 +905,7 @@ $$('.tab').forEach(tab=>tab.addEventListener('click',()=>{
       });
     });
   })();
-  
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
+  </script>
 
 <!-- KAM Metrics (auto-inyectado) -->
 <section id="kam-metrics" style="padding:24px 16px;">
@@ -1263,40 +927,7 @@ $$('.tab').forEach(tab=>tab.addEventListener('click',()=>{
   </div>
 </section>
 
-<script src="assets/js/kamMetrics.js">
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
+<script src="assets/js/kamMetrics.js"></script>
 
 <!-- Toast -->
 <div id="toastBox" style="position:fixed;top:16px;right:16px;z-index:3000;display:none;">
@@ -1558,39 +1189,6 @@ $$('.tab').forEach(tab=>tab.addEventListener('click',()=>{
   });
 
 })(); // end IIFE
-
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
 </script>
 <!-- ==== /INYECTADO ==== -->
 
@@ -1850,39 +1448,6 @@ document.getElementById('btnSaveMed').addEventListener('click', saveMedico);
 document.getElementById('btnClearMed').addEventListener('click', clearMed);
 document.getElementById('btnCloseMed').addEventListener('click', ()=> document.getElementById('panelAddMedico').style.display='none');
 
-
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
 </script>
 <!-- ==== /INYECTADO: Panel de Filtros ==== -->
 
@@ -1897,74 +1462,8 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
             <!-- /COTIZACIONES-LAUNCHER -->
             
 
-  <script src="assets/js/config.js?v=1">
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
-<script type="module" src="assets/js/firebase_medicos.js?v=7">
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
+  <script src="assets/js/config.js?v=1"></script>
+<script type="module" src="assets/js/firebase_medicos.js?v=7"></script>
 
 <!-- Modal Seguimiento -->
 <div id="modal-seg" class="modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.4);">
@@ -2015,223 +1514,9 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
   </div>
 </div>
 
-  <script src="assets/js/link_rows_to_firestore.js?v=2">
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
-<script src="assets/js/resolve_docid_on_click.js?v=1">
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
-<script src="assets/js/seg_panel_adapter.js?v=7">
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
-<script src="assets/js/patch_followup_runtime.js?v=1">
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
-
-<!-- Firebase realtime panel (CDN modules) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-  import { getFirestore, collection, onSnapshot, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyAyksNhyRX-7QnZSOF27txNU-_SeMoOGps",
-    authDomain: "crm-innvida-76e2e.firebaseapp.com",
-    projectId: "crm-innvida-76e2e",
-    storageBucket: "crm-innvida-76e2e.firebasestorage.app",
-    messagingSenderId: "865341286325",
-    appId: "1:865341286325:web:9fe06f1a3c2c7fea4e9bfc"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app);
-  signInAnonymously(auth).catch(()=>{});
-
-  const target = document.getElementById('liveMedicos');
-  const ucFirst = s => (s||'').charAt(0).toUpperCase()+ (s||'').slice(1);
-  onSnapshot(collection(db,'medicos'), async (snap) => {
-    const rows = await Promise.all(snap.docs.map(async d => {
-      let last = '—';
-      try {
-        const qs = await getDocs(query(collection(db,'medicos', d.id, 'seguimientos'), orderBy('createdAt','desc'), limit(1)));
-        if(!qs.empty) { const s = qs.docs[0].data(); last = (s.estado || ''); }
-      } catch(e){}
-      const m = d.data();
-      return `<div class="medRow" data-id="${d.id}" data-name="${m.Nombre||d.id}" style="padding:6px 0; border-bottom:1px solid #1f2937; cursor:pointer" >
-        <strong>${m.Nombre||d.id}</strong>
-        <span style="color:#9aa4b2">· ${ucFirst(m.EstadoRelacion||m.Estado||'')}</span>
-        <span style="float:right;color:#93c5fd">Seguimiento: ${last}</span>
-      </div>`;
-    }));
-    target.innerHTML = rows.sort().join('') || '<em>Sin datos</em>';
-  });
-
-  function openHistory(docId, name){
-    const modal = document.getElementById('histModal');
-    const title = document.getElementById('histTitle');
-    const body = document.getElementById('histBody');
-    title.textContent = 'Historial · ' + (name || docId);
-    body.innerHTML = 'Cargando…';
-    modal.style.display = 'block';
-
-    const col = collection(db,'medicos', docId, 'seguimientos');
-    const qy = query(col, orderBy('createdAt','desc'));
-    getDocs(qy).then((snap)=>{
-      const rows = snap.docs.map(d=>{
-        const s = d.data();
-        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
-        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
-          <strong>${s.estado||'-'}</strong> <span style="color:#9aa4b2">· ${s.kam||''}</span>
-          <div style="color:#94a3b8">${s.comentario||''}</div>
-          <small style="color:#64748b">${fecha}</small>
-        </div>`;
-      });
-      body.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
-    });
-    document.getElementById('histClose').onclick = ()=> modal.style.display='none';
-    modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
-  }
-
-  // Delegate clicks
-  document.addEventListener('click', (e)=>{
-    const row = e.target.closest?.('.medRow');
-    if(!row) return;
-    openHistory(row.dataset.id, row.dataset.name);
-  });
-</script>
-
-
-<div id="histModal" style="display:none; position:fixed; inset:0; background:rgba(2,6,23,.6); backdrop-filter:blur(2px); z-index:9999;">
-  <div style="max-width:760px; margin:60px auto; background:#0f1623; border:1px solid #1f2937; border-radius:16px; padding:16px">
-    <div style="display:flex; align-items:center">
-      <h3 id="histTitle" style="margin:0">Historial</h3>
-      <button id="histClose" style="margin-left:auto; padding:6px 10px; border-radius:10px; border:1px solid #334155; background:#0b1220; color:#e5e7eb; cursor:pointer">Cerrar</button>
-    </div>
-    <div id="histBody" style="margin-top:8px; font-size:14px; color:#cbd5e1">Cargando…</div>
-  </div>
-</div>
+  <script src="assets/js/link_rows_to_firestore.js?v=2"></script>
+<script src="assets/js/resolve_docid_on_click.js?v=1"></script>
+<script src="assets/js/seg_panel_adapter.js?v=7"></script>
+<script src="assets/js/patch_followup_runtime.js?v=1"></script>
 </body>
 </html>
