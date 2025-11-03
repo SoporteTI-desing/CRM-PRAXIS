@@ -1,0 +1,17 @@
+// patch_followup_runtime.js — convierte .btn-del en Seguimiento en vivo
+(function(){
+  function convert() {
+    document.querySelectorAll("button.btn-del").forEach(b => {
+      const id = b.getAttribute("data-del");
+      if (!id) return;
+      const seg = document.createElement("button");
+      seg.className = "btn btn-sm btn-primary btn-seg";
+      seg.setAttribute("data-id", id);
+      seg.textContent = "+ Seguimiento";
+      b.replaceWith(seg);
+    });
+  }
+  convert();
+  const mo = new MutationObserver(convert);
+  mo.observe(document.body, { childList:true, subtree:true });
+})();
