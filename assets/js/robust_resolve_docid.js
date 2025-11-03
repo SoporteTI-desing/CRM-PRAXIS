@@ -14,7 +14,8 @@
     return { fs: fsMod, db };
   }
 
-  async function resolveDocIdFromRow(btn){
+  window.resolveDocIdFromRow = async function resolveDocIdFromRow(btn){
+    window.__lastSegButton = btn;
     const row = btn.closest("tr");
     if(!row) return null;
     // se asume primer <td> = nombre, tercero = direccion (según tu tabla)

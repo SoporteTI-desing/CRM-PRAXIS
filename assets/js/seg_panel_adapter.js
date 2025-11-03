@@ -244,7 +244,10 @@ document.getElementById("saveModal")?.addEventListener("click", async (ev) => {
         _docId = snap.docs[0]?.id || null;
       }
     }
-    if (!_docId) { alert("No pude localizar el médico (docId)."); return; }
+    if (!_docId) {
+      try{ if (window.__lastSegButton && window.resolveDocIdFromRow) { _docId = await window.resolveDocIdFromRow(window.__lastSegButton); } }catch(_){}
+      if (!_docId) { alert("No pude localizar el médico (docId)."); return; }
+    }
 
     // Datos desde la UI
     const estado = (document.querySelector("#modalEstado, #seg-estatus, #seg-estado")?.value || "Contactado").trim();
@@ -261,7 +264,8 @@ document.getElementById("saveModal")?.addEventListener("click", async (ev) => {
       createdBy: (auth.currentUser && auth.currentUser.uid) || null,
     };
 
-    await fsMod.addDoc(fsMod.collection(db, "medicos", _docId, "seguimientos"), payload)
+    await fsMod.addDoc(fsMod.collection(db, "medicos", _docId, "seguimientos"), payload);
+    console.log('[seg guardar] addDoc ok');
     
     // Actualiza metadatos rápidos en el médico (no obligatorio)
     try {
