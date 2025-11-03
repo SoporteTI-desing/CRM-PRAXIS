@@ -57,7 +57,7 @@ function rowHTML(m){
       <td>${esc(m.estado)}</td>
       <td>${esc(m.region)}</td>
       <td>${esc(m.kam)}</td>
-      <td><button class="btn-seg" data-id="${esc(m.id)}">+ Seguimiento</button></td>
+      <td><button class="btn-del" data-del="${esc(m.id)}">Borrar</button></td>
     </tr>
   `;
 }
@@ -185,57 +185,9 @@ if (!window.__seguimientoPatched) {
       console.warn("Snapshot secundario no iniciado:", e);
     }
 
-    document.addEventListener("click", async (e) => {
-      const b = e.target.closest(".btn-seg");
-      if (!b) return;
-      const id = b.dataset.id;
-      try {
-        const s = await getDoc(doc(db, "medicos", id));
-        if (!s.exists()) { alert("No encontré el médico."); return; }
-        const med = s.data();
-        document.getElementById("seg-id").value = id;
-        const set = (x,v)=>{ const el = document.getElementById(x); if (el) el.value = v || ""; };
-        set("seg-nombre", med.nombre);
-        set("seg-telefono", med.telefono);
-        set("seg-direccion", med.direccion);
-        set("seg-hospital", med.hospital);
-        set("seg-redSocial", med.redSocial);
-        set("seg-especialidad", med.especialidad);
-        set("seg-base", med.base);
-        set("seg-estado", med.estado);
-        set("seg-region", med.region);
-        set("seg-kam", med.kam);
-        set("seg-estatus", med.estatus || "prospecto");
-        showModalSeg(true);
-      } catch (err) {
-        console.error(err); alert("Error cargando médico.");
-      }
-    });
-
+    // [patch] modal seguimiento deshabilitado; usa seg_panel_adapter.js
     document.getElementById("seg-cerrar")?.addEventListener("click", () => showModalSeg(false));
 
-    document.getElementById("seg-guardar")?.addEventListener("click", async () => {
-      const id = document.getElementById("seg-id")?.value;
-      if (!id) return;
-      const pick = (x)=>document.getElementById(x)?.value?.trim() || "";
-      const datos = {
-        nombre: pick("seg-nombre"),
-        telefono: pick("seg-telefono"),
-        direccion: pick("seg-direccion"),
-        hospital: pick("seg-hospital"),
-        redSocial: pick("seg-redSocial"),
-        especialidad: pick("seg-especialidad"),
-        base: pick("seg-base"),
-        estado: pick("seg-estado"),
-        region: pick("seg-region"),
-        kam: pick("seg-kam"),
-        estatus: pick("seg-estatus") || "prospecto",
-        updatedAt: serverTimestamp()
-      };
-      try {
-        await updateDoc(doc(db,"medicos",id), datos);
-        showModalSeg(false);
-      } catch(e){ console.error(e); alert("No pude guardar cambios."); }
-    });
-  });
+    // [patch] guardar modal deshabilitado
+});
 }
