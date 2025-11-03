@@ -1,7 +1,7 @@
 // firebase_medicos.js — realtime, mobile-safe, sin JSON (R2)
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import {
-  getFirestore, collection, query, onSnapshot, getDocsFromServer
+  getFirestore, collection, collectionGroup, query, onSnapshot, getDocsFromServer
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import {
   getAuth, signInAnonymously, setPersistence, inMemoryPersistence
@@ -25,7 +25,7 @@ const db  = getFirestore(app);
 
 // --- Helper contador
 function updateCounter(total, fromCache) {
-  const el = document.querySelector("#badgeMedicos, .badge-medicos");
+  const el = document.querySelector("#medCount") || document.querySelector("#badgeMedicos, .badge-medicos");
   if (el) {
     el.textContent = `${total} médicos${fromCache ? " (caché)" : ""}`;
     el.title = fromCache ? "Mostrando datos en caché" : "Datos desde la red";
@@ -41,7 +41,7 @@ function renderIfAvailable(docs) {
 }
 
 // --- Realtime (onSnapshot) — SIEMPRE Firestore
-const q = query(collection(db, "medicos"));
+const q = query(collectionGroup(db, "medicos"));
 onSnapshot(q, { includeMetadataChanges: true }, (snap) => {
   const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   updateCounter(snap.size, snap.metadata.fromCache === true);
