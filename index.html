@@ -143,7 +143,12 @@
           <select id="fEstado"><option value="">Estado (todos)</option></select>
           <select id="fRegion"><option value="">Región (todas)</option></select>
           <select id="fKam"><option value="">KAM (todos)</option></select>
-          <label class="muted">Página: </label>
+          <label class="muted">Página:<label for="page-size" style="margin-left:12px;">Página:</label>
+<select id="page-size" style="margin-left:6px;padding:6px 8px;border-radius:6px;">
+  <option value="20">20</option>
+  <option value="100">100</option>
+  <option value="all">Todos</option>
+</select> </label>
           <select id="pageSizeMed"><option>10</option><option selected>20</option><option>50</option><option>100</option></select>
         
         <div class="row right">
@@ -1457,5 +1462,56 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
             
 
   <script type="module" src="assets/js/firebase_medicos.js"></script>
+
+<!-- Modal Seguimiento -->
+<div id="modal-seg" class="modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.4);">
+  <div class="modal-content" style="background:#0f172a;color:#fff;border-radius:12px;padding:16px;max-width:780px;margin:40px auto;box-shadow:0 10px 30px rgba(0,0,0,.4)">
+    <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <h3 style="margin:0;font-size:20px;">Seguimiento de médico</h3>
+      <button id="seg-cerrar" style="padding:6px 10px;border-radius:8px;border:1px solid #334155;background:#1f2937;color:#fff;cursor:pointer">Cerrar</button>
+    </div>
+    <div class="modal-body" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <input id="seg-id" type="hidden" />
+      <label>Nombre
+        <input id="seg-nombre" class="input" type="text" style="width:100%;padding:8px;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#fff;">
+      </label>
+      <label>Teléfono
+        <input id="seg-telefono" class="input" type="text" style="width:100%;padding:8px;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#fff;">
+      </label>
+      <label>Dirección
+        <input id="seg-direccion" class="input" type="text" style="width:100%;padding:8px;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#fff;">
+      </label>
+      <label>Hospital
+        <input id="seg-hospital" class="input" type="text" style="width:100%;padding:8px;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#fff;">
+      </label>
+      <label>Red social
+        <input id="seg-redSocial" class="input" type="text" style="width:100%;padding:8px;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#fff;">
+      </label>
+      <label>Especialidad
+        <input id="seg-especialidad" class="input" type="text" style="width:100%;padding:8px;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#fff;">
+      </label>
+      <label>Base
+        <input id="seg-base" class="input" type="text" style="width:100%;padding:8px;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#fff;">
+      </label>
+      <label>Estado
+        <input id="seg-estado" class="input" type="text" style="width:100%;padding:8px;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#fff;">
+      </label>
+      <label>Región
+        <input id="seg-region" class="input" type="text" style="width:100%;padding:8px;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#fff;">
+      </label>
+      <label>Gerente / KAM
+        <input id="seg-kam" class="input" type="text" style="width:100%;padding:8px;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#fff;">
+      </label>
+      <label>Estatus
+        <input id="seg-estatus" class="input" type="text" placeholder="prospecto / activo / etc." style="width:100%;padding:8px;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#fff;">
+      </label>
+    </div>
+    <div class="modal-footer" style="margin-top:14px;display:flex;gap:10px;justify-content:flex-end;">
+      <button id="seg-guardar" style="padding:8px 14px;border-radius:10px;border:0;background:#2563eb;color:#fff;cursor:pointer">Guardar</button>
+    </div>
+  </div>
+</div>
+
+  <script src="assets/js/seg_panel_adapter.js"></script>
 </body>
 </html>
