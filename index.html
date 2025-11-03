@@ -1,168 +1,155 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CRM · INNVIDA — v3 Firestore (FULL)</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=2" />
+  <title>CRM · INNVIDA — v3 Firestore (Compat)</title>
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
-      <span class="logo">INN<span>VIDA</span></span>
-      <h1>CRM · INNVIDA — v3 Firestore</h1>
+      <span class="logo">INNVIDA</span>
+      <span class="title">CRM · INNVIDA — v3 Firestore</span>
+      <span class="badge" id="badgeTotal">0</span>
+      <span class="badge-label">médicos</span>
     </div>
     <nav class="tabs">
-      <a class="tab active" data-tab="medicos">Médicos</a>
-      <a class="tab" data-tab="cotizaciones">Cotizaciones</a>
-      <a class="tab" data-tab="estadisticas">Estadísticas & Mapa</a>
+      <button class="tab active">Médicos</button>
+      <button class="tab">Cotizaciones</button>
+      <button class="tab">Estadísticas & Mapa</button>
     </nav>
-    <span id="badgeTotal" class="badge">0 médicos</span>
   </header>
 
-  <main class="wrap">
-    <!-- TAB MÉDICOS -->
-    <section id="tab-medicos" class="tabpane active">
-      <div class="panel head-actions">
-        <div class="left">
-          <input id="txt-buscar" class="input" placeholder="Buscar nombre, hospital o especialidad...">
-          <select id="sel-estado" class="input">
-            <option value="">Estado (todos)</option>
-          </select>
-          <select id="sel-region" class="input">
-            <option value="">Región (todas)</option>
-          </select>
-          <select id="sel-kam" class="input">
-            <option value="">KAM (todos)</option>
-          </select>
-          <select id="sel-page" class="input">
-            <option value="20">Página: 20</option>
-            <option value="50">Página: 50</option>
-            <option value="100">Página: 100</option>
-            <option value="999999">Todos</option>
-          </select>
-        </div>
-        <div class="right">
-          <button id="btn-refrescar" class="btn secondary">Refrescar</button>
-          <button id="btn-csv" class="btn secondary">CSV</button>
-          <button id="btn-excel" class="btn secondary">Excel</button>
-          <button id="btn-abrir-form" class="btn">+ Agregar médico</button>
-        </div>
-      </div>
+  <main class="container">
+    <section class="actions">
+      <input type="text" id="buscador" placeholder="Buscar nombre, hospital o especialidad.." />
+      <select id="fEstado"><option value="">Estado (todos)</option></select>
+      <select id="fRegion"><option value="">Región (todas)</option></select>
+      <select id="fKAM"><option value="">KAM (todos)</option></select>
+      <select id="fPageSize">
+        <option value="20" selected>Página: 20</option>
+        <option value="50">Página: 50</option>
+        <option value="100">Página: 100</option>
+      </select>
+      <button id="btnRefrescar">Refrescar</button>
+      <button id="btnCSV">CSV</button>
+      <button id="btnExcel">Excel</button>
+      <button id="btnAgregar" class="primary">+ Agregar médico</button>
+    </section>
 
-      <div class="panel">
-        <div class="table-scroll">
-          <table class="tbl">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Teléfono</th>
-                <th>Dirección</th>
-                <th>Hospital</th>
-                <th>Red Social</th>
-                <th>Especialidad</th>
-                <th>Base</th>
-                <th>Estado</th>
-                <th>Región</th>
-                <th>Gerente / KAM</th>
-                <th>Seguimiento</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-medicos"></tbody>
-          </table>
-        </div>
-        <div class="pager">
-          <span id="pager-info">Mostrando 0 — Página 1/1</span>
-          <div class="pager-actions">
-            <button id="btn-prev" class="btn secondary">Anterior</button>
-            <button id="btn-next" class="btn secondary">Siguiente</button>
-          </div>
-        </div>
+    <section class="table-wrap">
+      <table class="grid">
+        <thead>
+          <tr>
+            <th>Nombre</th><th>Teléfono</th><th>Dirección</th><th>Hospital</th>
+            <th>Red Social</th><th>Especialidad</th><th>Base</th>
+            <th>Estado</th><th>Región</th><th>Gerente / KAM</th><th>Seguimiento</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-medicos"></tbody>
+      </table>
+      <div class="pager">
+        <button id="btnPrev">Anterior</button>
+        <span id="pageInfo">Mostrando 0 — Página 1/1</span>
+        <button id="btnNext">Siguiente</button>
       </div>
     </section>
 
-    <!-- PLACEHOLDERS -->
-    <section id="tab-cotizaciones" class="tabpane">
-      <div class="panel">
-        <h3 style="margin:0">Cotizaciones (placeholder)</h3>
-        <p>Integraremos tu módulo de cotizaciones aquí.</p>
+    <aside id="panelSeguimiento" class="seg-panel hidden">
+      <h3>Seguimiento</h3>
+      <label>Médico
+        <input type="text" id="segMedico" readonly />
+      </label>
+      <label>Estado
+        <select id="segEstado">
+          <option>Contactado</option>
+          <option>En seguimiento</option>
+          <option>Prospecto</option>
+          <option>No interesado</option>
+        </select>
+      </label>
+      <label>Próxima acción / Fecha
+        <input type="date" id="segFecha" />
+      </label>
+      <label>KAM / Gerente
+        <input type="text" id="segKAM" />
+      </label>
+      <label>Comentarios
+        <textarea id="segComentarios" rows="5"></textarea>
+      </label>
+      <div class="seg-actions">
+        <button id="segCancelar">Cancelar</button>
+        <button id="segGuardar" class="primary">Guardar</button>
       </div>
-    </section>
-
-    <section id="tab-estadisticas" class="tabpane">
-      <div class="panel">
-        <h3 style="margin:0">Estadísticas & Mapa (placeholder)</h3>
-        <p>Integraremos mapas, gráficos y KPIs aquí.</p>
+      <div class="seg-hist">
+        <h4>Historial de Seguimiento</h4>
+        <ul id="segHistList"></ul>
       </div>
-    </section>
+    </aside>
   </main>
 
-  <!-- Modal agregar médico -->
-  <dialog id="dlg-form" class="modal">
-    <form method="dialog" class="card" id="form-medico">
+  <!-- Modal Agregar Médico -->
+  <dialog id="dlgAgregar">
+    <form method="dialog" class="form">
       <h3>Registrar nuevo médico</h3>
-      <div class="grid-2">
-        <label>Nombre<input id="form-nombre" required /></label>
-        <label>Teléfono<input id="form-telefono" /></label>
-        <label>Dirección<input id="form-direccion" /></label>
-        <label>Hospital<input id="form-hospital" /></label>
-        <label>Red Social<input id="form-redsocial" /></label>
-        <label>Especialidad<input id="form-especialidad" /></label>
-        <label>Base<input id="form-base" /></label>
-        <label>Estado<input id="form-estado" /></label>
-        <label>Región<input id="form-region" /></label>
-        <label>KAM<input id="form-kam" /></label>
-        <label>Estatus
-          <select id="form-estatus">
-            <option>Contactado</option>
-            <option>Prospecto</option>
-            <option>En proceso</option>
-            <option>Activo</option>
-          </select>
-        </label>
+      <div class="grid2">
+        <label>Nombre <input id="iNombre" name="nombre" required></label>
+        <label>Teléfono <input id="iTelefono" name="telefono"></label>
+        <label>Dirección <input id="iDireccion" name="direccion"></label>
+        <label>Hospital <input id="iHospital" name="hospital"></label>
+        <label>Red Social <input id="iRed" name="redSocial"></label>
+        <label>Especialidad <input id="iEsp" name="especialidad"></label>
+        <label>Base <input id="iBase" name="base" value="Sin seguro"></label>
+        <label>Estado <input id="iEstado" name="estado"></label>
+        <label>Región <input id="iRegion" name="region"></label>
+        <label>KAM <input id="iKAM" name="kam"></label>
+        <label>Estatus <input id="iEstatus" name="estatus" value="nuevo"></label>
       </div>
-      <div class="row-right">
-        <button id="btn-cancelar" class="btn secondary">Cancelar</button>
-        <button id="btn-guardar-medico" class="btn">Guardar</button>
+      <div class="dlg-actions">
+        <button id="btnCancelarDlg">Cancelar</button>
+        <button id="btnGuardarMedico" class="primary">Guardar</button>
       </div>
     </form>
   </dialog>
 
-  <!-- Panel Seguimiento -->
-  <section id="panel-seguimiento" class="panel seg hidden">
-    <aside class="hist">
-      <h3 id="seg-titulo-medico">Historial de Seguimiento</h3>
-      <ul id="seg-historial" class="list"></ul>
-    </aside>
-    <div class="formbox">
-      <form id="seg-form">
-        <div class="grid-2">
-          <label>Médico<input id="seg-medico" readonly /></label>
-          <label>Estado
-            <select id="seg-estado">
-              <option>Contactado</option>
-              <option>Prospecto</option>
-              <option>En proceso</option>
-              <option>Activo</option>
-            </select>
-          </label>
-          <label>Próxima acción / Fecha<input type="date" id="seg-fecha" /></label>
-          <label>KAM / Gerente<input id="seg-kam" /></label>
-        </div>
-        <label>Comentarios<textarea id="seg-notas" rows="5"></textarea></label>
-        <div class="row-right">
-          <button id="seg-cancelar" class="btn secondary">Cancelar</button>
-          <button id="seg-guardar" class="btn">Guardar</button>
-        </div>
-      </form>
-    </div>
-  </section>
+  <!-- Firebase Boot -->
+  <script type="module" src="assets/js/firebase_boot.js"></script>
+  <!-- Bridge que fusiona base local + Firestore sin romper UI -->
+  <script type="module" src="assets/js/medicos_bridge.js"></script>
 
-  <!-- Firebase + App -->
-  <script type="module" src="assets/js/app.js?v=2"></script>
-  <!-- Live listing + filtros/paginación/export -->
-  <script type="module" src="assets/js/medicos_full.js?v=3"></script>
-  <!-- Seguimiento -->
-  <script src="assets/js/seg_panel_adapter.js?v=2"></script>
+  <!-- Hook para que el modal guarde en Firestore usando el bridge -->
+  <script>
+    const dlg = document.getElementById('dlgAgregar');
+    document.getElementById('btnAgregar').addEventListener('click', ()=> dlg.showModal());
+    document.getElementById('btnCancelarDlg').addEventListener('click', (e)=>{ e.preventDefault(); dlg.close(); });
+    document.getElementById('btnGuardarMedico').addEventListener('click', async (e)=>{
+      e.preventDefault();
+      const get = id => document.getElementById(id).value.trim();
+      const datos = {
+        nombre: get('iNombre'),
+        telefono: get('iTelefono'),
+        direccion: get('iDireccion'),
+        hospital: get('iHospital'),
+        redSocial: get('iRed') || 'No clasificado',
+        especialidad: get('iEsp') || 'No clasificado',
+        base: get('iBase') || 'Sin seguro',
+        estado: get('iEstado'),
+        region: get('iRegion'),
+        kam: get('iKAM'),
+        estatus: get('iEstatus') || 'nuevo',
+      };
+      if (!datos.nombre) { alert('Falta el nombre'); return; }
+      try{
+        await window.guardarNuevoMedico(datos);
+        alert('Médico guardado en Firestore');
+        dlg.close();
+      }catch(err){
+        console.error(err);
+        alert('No se pudo guardar. Revisa consola/reglas.');
+      }
+    });
+  </script>
 </body>
 </html>
