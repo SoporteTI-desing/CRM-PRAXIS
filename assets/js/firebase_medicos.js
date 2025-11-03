@@ -43,7 +43,7 @@ function renderIfAvailable(docs) {
 // --- Realtime (onSnapshot) — SIEMPRE Firestore
 const q = query(collectionGroup(db, "medicos"));
 onSnapshot(q, { includeMetadataChanges: true }, (snap) => {
-  const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const docs = snap.docs.map(d => ({ id: d.id, __path: d.ref.path, { id: d.id, __path: d.ref.path,  id: d.id, ...d.data() }));
   updateCounter(snap.size, snap.metadata.fromCache === true);
   renderIfAvailable(docs);
   document.dispatchEvent(new CustomEvent("medicos:snapshot", { detail: { docs, fromCache: snap.metadata.fromCache === true } }));
@@ -52,7 +52,7 @@ onSnapshot(q, { includeMetadataChanges: true }, (snap) => {
 // --- Forzar lectura de RED (para botón Refrescar)
 window.forceMedicosFromServer = async function () {
   const snap = await getDocsFromServer(q);
-  const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const docs = snap.docs.map(d => ({ id: d.id, __path: d.ref.path, { id: d.id, __path: d.ref.path,  id: d.id, ...d.data() }));
   updateCounter(snap.size, false);
   renderIfAvailable(docs);
 };
