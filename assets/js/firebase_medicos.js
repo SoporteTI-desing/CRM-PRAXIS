@@ -57,7 +57,7 @@ function rowHTML(m){
       <td>${esc(m.estado)}</td>
       <td>${esc(m.region)}</td>
       <td>${esc(m.kam)}</td>
-      <td><button class="btn-del" data-del="${esc(m.id)}">Borrar</button></td>
+      <td><button class="btn btn-sm btn-primary btn-seg" data-id="${m.id}">+ Seguimiento</button></td>
     </tr>
   `;
 }
@@ -185,9 +185,9 @@ if (!window.__seguimientoPatched) {
       console.warn("Snapshot secundario no iniciado:", e);
     }
 
-    // [patch] modal seguimiento deshabilitado; usa seg_panel_adapter.js
-    document.getElementById("seg-cerrar")?.addEventListener("click", () => showModalSeg(false));
-
-    // [patch] guardar modal deshabilitado
-});
+    // [final patch] modal handler disabled
+    // [final patch] close modal disabled
+alert("No pude guardar cambios."); }
+    });
+  });
 }
