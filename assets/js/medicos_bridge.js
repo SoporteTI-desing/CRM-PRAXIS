@@ -93,24 +93,33 @@ function listenFirestore(){
   }, console.error);
 }
 
+
 function getFiltered(){
   let list = fuseList.length ? fuseList : (window.MEDICOS||[]);
-  const q = (buscador?.value||"").toLowerCase();
-  const est = fEstado?.value||"";
-  const reg = fRegion?.value||"";
-  const kam = fKAM?.value||"";
+  const norm = (v) => (String(v||"").toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''));
+  const qRaw = (buscador?.value||"").trim();
+  const q = norm(qRaw);
+
+  const est = (fEstado?.value||"").trim();
+  const reg = (fRegion?.value||"").trim();
+  const kam = (fKAM?.value||"").trim();
+
   if(q){
-    list = list.filter(m =>
-      (m.nombre||"").toLowerCase().includes(q) ||
-      (m.hospital||"").toLowerCase().includes(q) ||
-      (m.especialidad||"").toLowerCase().includes(q)
-    );
+    list = list.filter(m => {
+      const hay = [
+        m.nombre, m.telefono, m.direccion, m.hospital,
+        m.redSocial, m.especialidad, m.base, m.estado,
+        m.region, m.kam, m.estatus
+      ].some(v => norm(v).includes(q));
+      return hay;
+    });
   }
-  if(est) list = list.filter(m=> (m.estado||"")==est);
-  if(reg) list = list.filter(m=> (m.region||"")==reg);
-  if(kam) list = list.filter(m=> (m.kam||"")==kam);
+  if(est) list = list.filter(m=> String(m.estado||"")===est);
+  if(reg) list = list.filter(m=> String(m.region||"")===reg);
+  if(kam) list = list.filter(m=> String(m.kam||"")===kam);
   return list;
 }
+
 
 function render(){
   const list = getFiltered();
