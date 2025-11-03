@@ -1522,3 +1522,16 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
 <script src="assets/js/refresh_on_guardado.js?v=1"></script>
 </body>
 </html>
+
+<script>
+(function(){
+  const ua = navigator.userAgent || '';
+  const isWebView = /\bFBAN|FBAV|Instagram|Line|Twitter|TikTok|GSA|GBC|wv\b/i.test(ua) || (window.webkit && window.webkit.messageHandlers);
+  if(isWebView){
+    const bar = document.createElement('div');
+    bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;background:#111827;color:#fff;padding:12px;z-index:99999;text-align:center';
+    bar.innerHTML = 'Para registrar y ver en tiempo real, <b>abre este enlace en tu navegador</b> (Chrome/Safari).';
+    document.body.appendChild(bar);
+  }
+})();
+</script>
