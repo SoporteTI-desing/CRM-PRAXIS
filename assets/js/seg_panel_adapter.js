@@ -210,7 +210,27 @@ document.getElementById("cancelModal")?.addEventListener("click", () => {
 
 document.getElementById("saveModal")?.addEventListener("click", async () => {
   try {
-    if (!__seg_docId) { alert("No tengo el ID del médico."); return; }
+    let _docId = __seg_docId;
+    if (!_docId) {
+      try {
+        const { getFirestore, collection, query, where, getDocs, limit } = window.fs || {};
+        const db = (window.firebaseDb) ? window.firebaseDb : (getFirestore ? getFirestore(window.firebaseApp) : null);
+        const nombre = (document.querySelector("#seg-nombre, #segNombre, input[name='nombre']")?.value || "").trim();
+        const direccion = (document.querySelector("#seg-direccion, #segDireccion, input[name='direccion']")?.value || "").trim();
+        if (db && nombre){
+          let q1 = query(collection(db, "medicos"), where("nombre","==", nombre));
+          if (direccion) q1 = query(collection(db, "medicos"), where("nombre","==", nombre), where("direccion","==", direccion));
+          const snap = await getDocs(q1);
+          snap.forEach(d=>{ if(!_docId) _docId = d.id; });
+          if(!_docId){
+            const s2 = await getDocs(query(collection(db,"medicos"), where("nombre","==", nombre), limit(1)));
+            s2.forEach(d=>{ if(!_docId) _docId = d.id; });
+          }
+        }
+      } catch(e) { console.warn("[saveModal] fallback resolver:", e); }
+    }
+    if (!_docId) { alert("No tengo el ID del médico."); return; }
+    __seg_docId = _docId;
     const estatus = document.getElementById("segStatus")?.value || "Contactado";
     const fecha   = document.getElementById("segFecha")?.value || null;
     const notas   = document.getElementById("segNotas")?.value?.trim() || "";
