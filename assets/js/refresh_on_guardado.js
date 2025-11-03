@@ -2,6 +2,7 @@
 // refresh_on_guardado.js
 (function(){
   document.addEventListener("medico:guardado", function(){
+    if (window.__savingSeguimiento) return;
     var btn = Array.from(document.querySelectorAll("button, .btn")).find(b => (b.textContent||"").toLowerCase().includes("refrescar"));
     if(btn){ btn.click(); return; }
     if(typeof window.renderMedicos === "function"){ try{ window.renderMedicos(); return; }catch(_){ } }

@@ -209,7 +209,9 @@ document.getElementById("cancelModal")?.addEventListener("click", () => {
 });
 
 
-document.getElementById("saveModal")?.addEventListener("click", async () => {
+document.getElementById("saveModal")?.addEventListener("click", async (ev) => {
+  try{ ev && ev.preventDefault(); ev.stopPropagation(); }catch(_){}
+  window.__savingSeguimiento = true;
   try {
     // Módulos Firebase
     const [appMod, fsMod, authMod] = await Promise.all([
@@ -278,6 +280,7 @@ document.getElementById("saveModal")?.addEventListener("click", async () => {
   } catch (e) {
     console.error("[seg guardar] ", e);
     alert("No pude guardar el seguimiento. Revisa la consola.");
+    window.__savingSeguimiento = false;
   }
 });
 
