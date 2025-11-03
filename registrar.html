@@ -29,6 +29,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
   import { getFirestore, collection, addDoc, serverTimestamp, query, where, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  import { collection, addDoc, serverTimestamp, query, where, getDocs, doc, setDoc, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
   import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
   const firebaseConfig = {
@@ -55,6 +56,67 @@
 
   // Helpers to trim
   const trim = (v)=> (v||'').toString().trim();
+
+  // Carga de médicos para autocomplete y escucha de historial
+  async function populateMedicosList(){
+    const list = document.getElementById('s_medico_list');
+    if(!list) return;
+    list.innerHTML = '';
+    const qs = await getDocs(collection(db,'medicos'));
+    qs.forEach(d=>{
+      const m = d.data();
+      const opt = document.createElement('option');
+      opt.value = m.Nombre || d.id;
+      list.appendChild(opt);
+    });
+  }
+  populateMedicosList();
+
+  let currentUnsub = null;
+  function listenHistoryFor(name){
+    const list = document.getElementById('segList');
+    if(currentUnsub){ currentUnsub(); currentUnsub=null; }
+    list.innerHTML = '<em>Cargando historial…</em>';
+    const key = (name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$|_/g,'');
+    const col = collection(db,'medicos', key, 'seguimientos');
+    const qy = query(col, orderBy('createdAt','desc'));
+    currentUnsub = onSnapshot(qy, (snap)=>{
+      const rows = snap.docs.map(d=>{
+        const s = d.data();
+        const fecha = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : '';
+        return `<div style="padding:6px 0; border-bottom:1px solid #1f2937">
+          <strong>${s.estado||'-'}</strong>
+          <span style="color:#9aa4b2"> · ${s.kam||''}</span>
+          <div style="color:#94a3b8">${s.comentario||''}</div>
+          <small style="color:#64748b">${fecha}</small>
+        </div>`;
+      });
+      list.innerHTML = rows.join('') || '<em>Sin seguimientos</em>';
+      // Guarda snapshot en window para CSV
+      window.__lastSegRows = snap.docs.map(d=>d.data());
+    }, (err)=>{
+      list.innerHTML = '<span style="color:#ef4444">Error: '+err.message+'</span>';
+    });
+  }
+
+  const inputMed = document.getElementById('s_medico');
+  if(inputMed){
+    inputMed.addEventListener('change', ()=> listenHistoryFor(inputMed.value));
+  }
+
+  document.getElementById('btnCSV')?.addEventListener('click', ()=>{
+    const rows = (window.__lastSegRows || []);
+    const header = ['medico','estado','comentario','kam','proxima','createdAt'];
+    const csv = [header.join(',')].concat(rows.map(r=>{
+      const d = r.createdAt?.toDate ? r.createdAt.toDate().toISOString() : '';
+      return [r.medico||'', r.estado||'', (r.comentario||'').replace(/\n|\r/g,' '), r.kam||'', r.proxima||'', d].map(x=>`"${(x+'').replace(/"/g,'""')}"`).join(',');
+    })).join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'seguimientos_'+(inputMed?.value||'medico')+'.csv';
+    a.click();
+  });
 
   // Override existing saveMed() and saveSeg() if present to use Firestore
   window.saveMed = async function(){
