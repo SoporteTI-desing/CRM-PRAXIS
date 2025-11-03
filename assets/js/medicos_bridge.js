@@ -1,10 +1,9 @@
 
-import {
-  collection, collectionGroup, onSnapshot, query, orderBy, addDoc, serverTimestamp,
+import { getFirestore, collection, collectionGroup, onSnapshot, query, orderBy, addDoc, serverTimestamp,
   doc, getDoc, setDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-const db = window.DB;
+const db = getFirestore();
 const TBody = document.querySelector("#tbody-medicos") || document.querySelector("tbody");
 const badge = document.querySelector("#badgeTotal") || document.querySelector("[data-total]");
 const pageInfo = document.querySelector("#pageInfo");
