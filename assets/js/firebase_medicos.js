@@ -57,7 +57,7 @@ function rowHTML(m){
       <td>${esc(m.estado)}</td>
       <td>${esc(m.region)}</td>
       <td>${esc(m.kam)}</td>
-      <td><button class="btn-del" data-del="${esc(m.id)}">Borrar</button></td>
+      <td><button class="btn-seg" data-id="${esc(m.id)}">+ Seguimiento</button></td>
     </tr>
   `;
 }
