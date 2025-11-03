@@ -109,6 +109,7 @@
 </style>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="assets/css/patch_hide_delete.css?v=1">
 </head>
 <body>
   <header>
@@ -1461,7 +1462,8 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
             <!-- /COTIZACIONES-LAUNCHER -->
             
 
-  <script type="module" src="assets/js/firebase_medicos.js"></script>
+  <script src="assets/js/config.js?v=1"></script>
+    <script type="module" src="assets/js/firebase_medicos.js?v=4"></script>
 
 <!-- Modal Seguimiento -->
 <div id="modal-seg" class="modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.4);">
@@ -1513,5 +1515,6 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
 </div>
 
   <script src="assets/js/seg_panel_adapter.js"></script>
+  <script src="assets/js/patch_followup_runtime.js?v=1"></script>
 </body>
 </html>
