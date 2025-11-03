@@ -1,7 +1,6 @@
-
 // Hook the "Refrescar" button to force network fetch
 (function(){
-  function hook(){
+  function tryHook(){
     const btn = Array.from(document.querySelectorAll("button,.btn"))
       .find(b => ((b.textContent||"").trim().toLowerCase() === "refrescar"));
     if(btn && !btn.__hooked){
@@ -16,7 +15,7 @@
       }, { capture:true });
     }
   }
-  const mo = new MutationObserver(hook);
+  const mo = new MutationObserver(tryHook);
   mo.observe(document.documentElement, { childList:true, subtree:true });
-  hook();
+  tryHook();
 })();
