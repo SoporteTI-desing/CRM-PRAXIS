@@ -366,7 +366,7 @@ function renderMedicos(){
       <td>${r['Base']||r['base']||''}</td><td>${r['Estado']||r['estado']||''}</td><td>${r['Región']||r['Region']||r['region']||''}</td><td>${r['GERENTE/KAM']||r['KAM']||r['kam']||''}</td>
       <td class="center">
         <span class="dot ${(()=>{ const est=latestEstadoFor(nombre); return est?estadoColor(est):'gray'; })()}"></span>
-        <button type="button" class="btn btn-seg" data-id="${r._id}" data-action="seguimiento" data-nombre="${nombre}" data-direccion="${dir}">+ Seguimiento</button>
+        <button class="btn ghost">+ Seguimiento</button>
       </td>`;
     tr.querySelector('button').addEventListener('click',()=> openModal({Nombre:nombre, KAM:(r['GERENTE/KAM']||r['KAM']||r['kam']||'')}));
     tbMed.appendChild(tr);
@@ -1463,7 +1463,7 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
             
 
   <script src="assets/js/config.js?v=1"></script>
-<script type="module" src="assets/js/firebase_medicos.js?v=2R2"></script>
+<script type="module" src="assets/js/firebase_medicos.js?v=20251103R2"></script>
 <script type="module" src="assets/js/save_med_index.js?v=20251103R2"></script>
 
 <!-- Modal Seguimiento -->
@@ -1525,7 +1525,7 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
 
 <script>
 /* === Renderer oficial para la tabla de MÉDICOS ==========================
-   Usa los docs que emite firebase_medicos.js?v=2 en tiempo real.
+   Usa los docs que emite firebase_medicos.js en tiempo real.
    - Llena #tbody-medicos
    - Busca en varios campos (sin acentos)
    - Respeta filtros Estado/Región/KAM si existen
@@ -1562,7 +1562,7 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
         <td>${m.estado || "-"}</td>
         <td>${m.region || "-"}</td>
         <td>${m.kam || "-"}</td>
-        <td><button type="button" class="btn btn-seg" data-id="${r._id}" data-action="seguimiento" data-nombre="${nombre}" data-direccion="${dir}">+ Seguimiento</button></td>
+        <td><button class="btn ghost" data-id="${m.id || ""}">+ Seguimiento</button></td>
       `;
       tbody.appendChild(tr);
     });
@@ -1592,7 +1592,7 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
     paint(VIEW);
   }
 
-  // Este método lo llama firebase_medicos.js?v=2 en cada snapshot
+  // Este método lo llama firebase_medicos.js en cada snapshot
   window.renderMedicos = function(docs) {
     ALL = Array.isArray(docs) ? [...docs] : [];
     ALL.sort((a,b) => {
@@ -1614,14 +1614,6 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
 })();
 </script>
 
-  <script src="assets/js/export_firestore_hist.js?v=1"></script>
-  <script src="assets/js/export_firestore_medicos.js?v=1"></script>
-  <script src="assets/js/medicos_realtime_override.js?v=1"></script>
-  <script src="assets/js/compat_followup_buttons.js?v=1"></script>
-  <script src="assets/js/robust_resolve_docid.js?v=1"></script>
-  <script src="assets/js/guard_block_save_med.js?v=1"></script>
-  <script src="assets/js/hist_realtime_renderer.js?v=1"></script>
-  <script src="assets/js/table_fallback_renderer.js?v=1"></script>
 </body>
 </html>
 

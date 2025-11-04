@@ -50,13 +50,13 @@
       m_estado: "#seg-estado",
       m_region: "#seg-region",
       m_kam: "#seg-kam",
-      m_estatus: "#seg-estatus, #modalEstado",
-      f_fecha: "#seg-fecha, #modalProxima, input[type='date'][name='fecha']",
-      f_comentarios: "#seg-comentarios, #seg-nota, #modalComentarios, textarea[name='comentarios'], textarea[name='nota']",
-      f_usuario: "#seg-usuario, #modalKam, input[name='usuario'], input[name='kam']",
+      m_estatus: "#seg-estatus",
+      f_fecha: "#seg-fecha, input[type='date'][name='fecha']",
+      f_comentarios: "#seg-comentarios, #seg-nota, textarea[name='comentarios'], textarea[name='nota']",
+      f_usuario: "#seg-usuario, input[name='usuario'], input[name='kam']",
       f_estado: "#seg-estado-seg, select[name='estado-seg'], #seg-estado",
-      btnGuardar: "#seg-guardar, #saveModal, button[data-seg='guardar'], .seg-guardar",
-      lista: "#seg-hist-list, #historial-seg, #histContent, [data-seg='hist']"
+      btnGuardar: "#seg-guardar, button[data-seg='guardar'], .seg-guardar",
+      lista: "#seg-hist-list, #historial-seg, [data-seg='hist']"
     };
 
     // Cargar Firebase módulos de manera segura
@@ -208,86 +208,50 @@ document.getElementById("cancelModal")?.addEventListener("click", () => {
   const md = document.getElementById("modalBackdrop"); if (md) md.style.display = "none";
 });
 
-
-document.getElementById("saveModal")?.addEventListener("click", async (ev) => {
-  try{ ev && ev.preventDefault(); ev.stopPropagation(); }catch(_){}
-  window.__savingSeguimiento = true;
+document.getElementById("saveModal")?.addEventListener("click", async () => {
   try {
-    // Módulos Firebase
-    const [appMod, fsMod, authMod] = await Promise.all([
-      import("https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"),
-      import("https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"),
-      import("https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"),
-    ]);
-
-    const app = (window.firebaseApp) || appMod.initializeApp(window.FIREBASE_CONFIG);
-    window.firebaseApp = app;
-    const db  = (window.firebaseDb) || fsMod.getFirestore(app);
-    window.firebaseDb = db;
-    const auth = authMod.getAuth(app);
-    if (!auth.currentUser) {
-      await authMod.setPersistence(auth, authMod.inMemoryPersistence);
-      await authMod.signInAnonymously(auth);
-    }
-
-    // Resolver docId (si hace falta)
-    let _docId = window.__seg_docId || null;
+    let _docId = __seg_docId;
     if (!_docId) {
-      const nombre = (document.querySelector("#modalMedico, #seg-nombre, #segNombre, input[name='nombre']")?.value || "").trim();
-      const direccion = (document.querySelector("#seg-direccion, #segDireccion, input[name='direccion']")?.value || "").trim();
-      if (nombre) {
-        let q1 = fsMod.query(fsMod.collection(db, "medicos"), fsMod.where("nombre","==", nombre));
-        if (direccion) q1 = fsMod.query(fsMod.collection(db, "medicos"),
-                                        fsMod.where("nombre","==", nombre),
-                                        fsMod.where("direccion","==", direccion));
-        const snap = await fsMod.getDocs(q1);
-        _docId = snap.docs[0]?.id || null;
-      }
+      try {
+        const { getFirestore, collection, query, where, getDocs, limit } = window.fs || {};
+        const db = (window.firebaseDb) ? window.firebaseDb : (getFirestore ? getFirestore(window.firebaseApp) : null);
+        const nombre = (document.querySelector("#seg-nombre, #segNombre, input[name='nombre']")?.value || "").trim();
+        const direccion = (document.querySelector("#seg-direccion, #segDireccion, input[name='direccion']")?.value || "").trim();
+        if (db && nombre){
+          let q1 = query(collection(db, "medicos"), where("nombre","==", nombre));
+          if (direccion) q1 = query(collection(db, "medicos"), where("nombre","==", nombre), where("direccion","==", direccion));
+          const snap = await getDocs(q1);
+          snap.forEach(d=>{ if(!_docId) _docId = d.id; });
+          if(!_docId){
+            const s2 = await getDocs(query(collection(db,"medicos"), where("nombre","==", nombre), limit(1)));
+            s2.forEach(d=>{ if(!_docId) _docId = d.id; });
+          }
+        }
+      } catch(e) { console.warn("[saveModal] fallback resolver:", e); }
     }
-    if (!_docId) {
-      try{ if (window.__lastSegButton && window.resolveDocIdFromRow) { _docId = await window.resolveDocIdFromRow(window.__lastSegButton); } }catch(_){}
-      if (!_docId) { alert("No pude localizar el médico (docId)."); return; }
-    }
+    if (!_docId) { alert("No tengo el ID del médico."); return; }
+    __seg_docId = _docId;
+    const estatus = document.getElementById("segStatus")?.value || "Contactado";
+    const fecha   = document.getElementById("segFecha")?.value || null;
+    const notas   = document.getElementById("segNotas")?.value?.trim() || "";
+    const kam     = document.getElementById("segKAM")?.value?.trim() || "";
 
-    // Datos desde la UI
-    const estado = (document.querySelector("#modalEstado, #seg-estatus, #seg-estado")?.value || "Contactado").trim();
-    const fechaStr = (document.querySelector("#modalProxima, #seg-fecha, input[type='date'][name='fecha']")?.value || "").trim();
-    const comentarios = (document.querySelector("#modalComentarios, #seg-comentarios, #seg-nota, textarea[name='comentarios'], textarea[name='nota']")?.value || "").trim();
-    const kam = (document.querySelector("#modalKam, #seg-usuario, input[name='usuario'], input[name='kam']")?.value || "").trim();
+    const fs = await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js");
+    const db = fs.getFirestore();
+    await fs.addDoc(
+      fs.collection(db, "medicos", __seg_docId, "seguimientos"),
+      { estatus, comentarios: notas, usuario: kam, fecha, createdAt: fs.serverTimestamp() }
+    );
+    await fs.setDoc(fs.doc(db, "medicos", __seg_docId), { estatus, kam }, { merge: true });
 
-    const payload = {
-      estado,
-      proximaAccion: fechaStr ? new Date(fechaStr) : null,
-      comentarios,
-      kam,
-      createdAt: fsMod.serverTimestamp(),
-      createdBy: (auth.currentUser && auth.currentUser.uid) || null,
-    };
-
-    await fsMod.addDoc(fsMod.collection(db, "medicos", _docId, "seguimientos"), payload);
-    console.log('[seg guardar] addDoc ok');
-    
-    // Actualiza metadatos rápidos en el médico (no obligatorio)
-    try {
-      const medRef = fsMod.doc(db, "medicos", _docId);
-      await fsMod.updateDoc(medRef, { ultimoEstado: estado, ultimoSeguimiento: fsMod.serverTimestamp() });
-    } catch(_){}
-
-    // Limpiar y cerrar modal
-    const md = document.getElementById("modalBackdrop"); if (md) md.style.display = "none";
-    (document.querySelector("#modalProxima")||{}).value = "";
-    (document.querySelector("#modalComentarios")||{}).value = "";
-    (document.querySelector("#modalKam")||{}).value = "";
-
-    // Render historial actualizado
-    try { renderSeguimientos(_docId); try{ if(window.watchSeguimientos){ window.watchSeguimientos(_docId); } }catch(_){} } catch(_){}
+    const n = document.getElementById("segNotas"); if (n) n.value = "";
+    renderSeguimientos(__seg_docId);
+    console.log("[seguimiento] guardado para docId:", __seg_docId);
   } catch (e) {
-    console.error("[seg guardar] ", e);
+    console.error("[seguimiento] error al guardar:", e);
     alert("No pude guardar el seguimiento. Revisa la consola.");
-    window.__savingSeguimiento = false;
   }
 });
-
 
 async function renderSeguimientos(docId){
   try{

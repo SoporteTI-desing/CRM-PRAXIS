@@ -1,84 +1,58 @@
+// firebase_medicos.js — realtime, mobile-safe, sin JSON (R2)
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import {
+  getFirestore, collection, collectionGroup, query, onSnapshot, getDocsFromServer
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import {
+  getAuth, signInAnonymously, setPersistence, inMemoryPersistence
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-// firebase_medicos.js — versión estable sin errores de sintaxis
-(function(){
-  let _unsub = null;
+// --- Init (una sola vez)
+const app = getApps()[0] || initializeApp(window.FIREBASE_CONFIG);
+const db  = getFirestore(app);
 
-  async function ensureFirebase(){
-    const [appMod, fsMod] = await Promise.all([
-      import("https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"),
-      import("https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js")
-    ]);
-    const app = (window.firebaseApp) || appMod.initializeApp(window.FIREBASE_CONFIG);
-    window.firebaseApp = app;
-    const db = (window.firebaseDb) || fsMod.getFirestore(app);
-    window.firebaseDb = db;
-    return { fs: fsMod, db };
+// Auth anónima solo para escribir; las lecturas son públicas por tus rules
+(async () => {
+  try {
+    const auth = getAuth(app);
+    await setPersistence(auth, inMemoryPersistence);
+    await signInAnonymously(auth);
+    console.log("[medicos] auth anon listo");
+  } catch (e) {
+    console.warn("[medicos] auth anon opcional:", e);
   }
-
-  function mapDocToRow(d){
-    const r = d.data() || {};
-    return {
-      _id: d.id,
-      'Nombre': r.Nombre || r.nombre || "",
-      'Teléfono': r['Teléfono'] || r.Telefono || r.telefono || r.tel || "",
-      'Dirección': r.Direccion || r.Dirección || r.direccion || "",
-      'Hospital': r.Hospital || r.hospital || "",
-      'Red Social': r['Red Social'] || r.redSocial || r.red || "",
-      'Especialidad': r.Especialidad || r.especialidad || "",
-      'Base': r.Base || r.base || "",
-      'Estado': r.Estado || r.estado || "",
-      'Región': r.Region || r.Región || r.region || "",
-      'GERENTE/KAM': r['GERENTE/KAM'] || r.KAM || r.kam || ""
-    };
-  }
-
-  function renderIfAvailable(docs){
-    const rows = (docs || []).map(mapDocToRow);
-    window.MED_BASE = rows;
-    try {
-      if (typeof window.applyMedFilters === "function") window.applyMedFilters();
-      else if (typeof window.renderMedicos === "function") window.renderMedicos();
-    } catch(e){ console.warn("[medicos] render error:", e); }
-    // contador
-    try {
-      const badge = document.getElementById("medCount");
-      if (badge) badge.textContent = String(rows.length) + " médicos";
-    } catch(_){}
-  }
-
-  async function startRealtime(){
-    const { fs, db } = await ensureFirebase();
-    try { _unsub && _unsub(); } catch(_){}
-    const q = fs.query(fs.collection(db, "medicos")); // colección principal
-    _unsub = fs.onSnapshot(q, (snap)=>{
-      const docs = [];
-      snap.forEach((d)=> docs.push(d));
-      renderIfAvailable(docs);
-      console.log("[medicos] onSnapshot:", docs.length);
-    }, (err)=>{
-      console.error("[medicos] snapshot error", err);
-    });
-  }
-
-  // Público: forzar desde botón "Refrescar"
-  window.forceMedicosFromServer = async function(){
-    const { fs, db } = await ensureFirebase();
-    const snap = await fs.getDocs(fs.collection(db, "medicos"));
-    const docs = [];
-    snap.forEach((d)=> docs.push(d));
-    renderIfAvailable(docs);
-    console.log("[medicos] force from server:", docs.length);
-  };
-
-  // Hook al botón Refrescar si existe
-  document.addEventListener("click", function(ev){
-    const btn = ev.target.closest && ev.target.closest("#refreshMedicos");
-    if (btn){
-      ev.preventDefault();
-      window.forceMedicosFromServer();
-    }
-  });
-
-  // Arrancar
-  startRealtime();
 })();
+
+// --- Helper contador
+function updateCounter(total, fromCache) {
+  const el = document.querySelector("#medCount") || document.querySelector("#badgeMedicos, .badge-medicos");
+  if (el) {
+    el.textContent = `${total} médicos${fromCache ? " (caché)" : ""}`;
+    el.title = fromCache ? "Mostrando datos en caché" : "Datos desde la red";
+  }
+}
+
+// --- Render helper (si tu app expone renderMedicos, lo usamos)
+function renderIfAvailable(docs) {
+  if (typeof window.renderMedicos === "function") {
+    try { window.renderMedicos(docs); } catch {}
+  }
+  window.__medicosDocs = docs; // por si otros módulos lo consumen
+}
+
+// --- Realtime (onSnapshot) — SIEMPRE Firestore
+const q = query(collectionGroup(db, "medicos"));
+onSnapshot(q, { includeMetadataChanges: true }, (snap) => {
+  const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  updateCounter(snap.size, snap.metadata.fromCache === true);
+  renderIfAvailable(docs);
+  document.dispatchEvent(new CustomEvent("medicos:snapshot", { detail: { docs, fromCache: snap.metadata.fromCache === true } }));
+});
+
+// --- Forzar lectura de RED (para botón Refrescar)
+window.forceMedicosFromServer = async function () {
+  const snap = await getDocsFromServer(q);
+  const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  updateCounter(snap.size, false);
+  renderIfAvailable(docs);
+};
