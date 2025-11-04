@@ -42,7 +42,7 @@ import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gsta
     const btn=document.getElementById("btnSaveMed"); if(btn){ const old=btn.textContent; btn.textContent="Guardado ✓"; setTimeout(()=> btn.textContent=old||"Guardar médico", 1400); }
     toast("Médico guardado en Firestore","ok");
     ["m_nombre","m_tel","m_dir","m_hosp","m_red","m_esp","m_estado","m_region","m_kam","m_base"].forEach(i=>{ const el=$(i); if(el) el.value=""; });
-    document.dispatchEvent(new CustomEvent("medico:guardado", { detail: { id, payload } })); return id;
+    /* no auto refresh */ return id;
   }
   window.__saveMed = () => save().catch(e=>{ console.error(e); toast("❌ No se pudo guardar: "+(e?.message||e),"error"); });
   document.addEventListener("click", (e)=>{

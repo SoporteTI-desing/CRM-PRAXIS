@@ -80,24 +80,6 @@
       var addDoc       = fsMod.addDoc;
       var updateDoc    = fsMod.updateDoc;
       var serverTimestamp = fsMod.serverTimestamp;
-      // --- Auth helper (garantiza auth anónima antes de escribir) ---
-      var authMod = null;
-      function ensureAuth(){
-        return new Promise(function(resolve){
-          try{
-            import("https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js").then(function(a){
-              authMod = a;
-              var getAuth = a.getAuth, signInAnonymously = a.signInAnonymously, onAuthStateChanged = a.onAuthStateChanged, setPersistence = a.setPersistence, inMemoryPersistence = a.inMemoryPersistence;
-              var auth = getAuth();
-              setPersistence(auth, inMemoryPersistence).catch(function(){});
-              if (auth.currentUser) { resolve(auth.currentUser); return; }
-              onAuthStateChanged(auth, function(u){ if(u){ resolve(u); }});
-              signInAnonymously(auth).catch(function(e){ console.warn("[seguimiento] anon auth error:", e); resolve(null); });
-            }).catch(function(e){ console.warn("[seguimiento] no pude cargar auth:", e); resolve(null); });
-          }catch(e){ resolve(null); }
-        });
-      }
-
 
       var app = (getApps().length ? getApps()[0] : null);
       if (!app && window.FIREBASE_CONFIG) {
@@ -267,7 +249,7 @@ document.getElementById("saveModal")?.addEventListener("click", async () => {
     console.log("[seguimiento] guardado para docId:", __seg_docId);
   } catch (e) {
     console.error("[seguimiento] error al guardar:", e);
-    alert("No pude guardar el seguimiento. Verifica: 1) Conexión, 2) Reglas de Firestore permitan create en medicos/*/seguimientos, 3) Que haya sesión anónima. Revisa la consola para el detalle.");
+    alert("No pude guardar el seguimiento. Revisa la consola.");
   }
 });
 
