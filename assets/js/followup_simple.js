@@ -67,8 +67,8 @@ async function openSeguimiento(docId){
         const f  = dt.toISOString().slice(0,10);
         return `<div class="item" style="padding:6px 0;border-bottom:1px solid #1f2937">
                   <div><strong>${f}</strong> — ${v.estado||"-"} ${v.kam?`(${v.kam})`:""}</div>
-                  <div style="opacity:.9">${v.comentario||v.comentarios||""}</div>
-                  ${v.proxima?`<div style="opacity:.7">Próxima: ${v.proxima}</div>`:""}
+                  <div style="opacity:.9">${v.comentarios||""}</div>
+                  ${v.proximaAccion?`<div style="opacity:.7">Próxima: ${v.proximaAccion}</div>`:""}
                 </div>`;
       }).join("") || "<em>Sin seguimientos</em>";
       cont.innerHTML = items;
@@ -87,10 +87,11 @@ $("#segSimpleSave").addEventListener("click", async ()=>{
     if (!auth.currentUser) { try { await signInAnonymously(auth); } catch(_){} }
     const payload = {
       estado: $("#segEstado").value,
-      proxima: $("#segFecha").value || null,
-      comentario: $("#segComentarios").value.trim(),
+      proximaAccion: ($("#segFecha").value || null),
+      comentarios: $("#segComentarios").value.trim(),
       kam: $("#segKAM").value.trim(),
       createdAt: serverTimestamp(),
+      createdBy: (auth.currentUser ? auth.currentUser.uid : null),
     };
     await addDoc(collection(db, "medicos", docId, "seguimientos"), payload);
     showToast("Guardado en Firestore ✓");
