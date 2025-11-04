@@ -50,13 +50,13 @@
       m_estado: "#seg-estado",
       m_region: "#seg-region",
       m_kam: "#seg-kam",
-      m_estatus: "#seg-estatus",
-      f_fecha: "#seg-fecha, input[type='date'][name='fecha']",
-      f_comentarios: "#seg-comentarios, #seg-nota, textarea[name='comentarios'], textarea[name='nota']",
-      f_usuario: "#seg-usuario, input[name='usuario'], input[name='kam']",
+      m_estatus: "#seg-estatus, #modalEstado",
+      f_fecha: "#seg-fecha, #modalProxima, input[type='date'][name='fecha']",
+      f_comentarios: "#seg-comentarios, #seg-nota, #modalComentarios, textarea[name='comentarios'], textarea[name='nota']",
+      f_usuario: "#seg-usuario, #modalKam, input[name='usuario'], input[name='kam']",
       f_estado: "#seg-estado-seg, select[name='estado-seg'], #seg-estado",
-      btnGuardar: "#seg-guardar, button[data-seg='guardar'], .seg-guardar",
-      lista: "#seg-hist-list, #historial-seg, [data-seg='hist']"
+      btnGuardar: "#seg-guardar, #saveModal, button[data-seg='guardar'], .seg-guardar",
+      lista: "#seg-hist-list, #historial-seg, #histContent, [data-seg='hist']"
     };
 
     // Cargar Firebase módulos de manera segura
