@@ -11,6 +11,16 @@ setPersistence(auth, inMemoryPersistence);
 onAuthStateChanged(auth, ()=>{});
 signInAnonymously(auth).catch(()=>{});
 
+async function ensureAuth(){
+  if (auth.currentUser) return auth.currentUser;
+  return new Promise((resolve) => {
+    const unsub = onAuthStateChanged(auth, (u)=>{ if(u){ unsub(); resolve(u); } });
+    signInAnonymously(auth).catch(()=> resolve(null));
+    setTimeout(()=> resolve(auth.currentUser||null), 1500);
+  });
+}
+
+
 // UI helpers
 function el(html){ const d=document.createElement("div"); d.innerHTML=html.trim(); return d.firstElementChild; }
 function $(s){ return document.querySelector(s); }
@@ -83,16 +93,19 @@ $("#segSimpleSave").addEventListener("click", async ()=>{
   try{
     const docId = $("#segMedicoId").value;
     if(!docId){ alert("Falta el ID del médico"); return; }
-    // asegurar auth
-    if (!auth.currentUser) { try { await signInAnonymously(auth); } catch(_){} }
-    const payload = {
-      estado: $("#segEstado").value,
-      proximaAccion: ($("#segFecha").value || null),
-      comentarios: $("#segComentarios").value.trim(),
-      kam: $("#segKAM").value.trim(),
-      createdAt: serverTimestamp(),
-      createdBy: (auth.currentUser ? auth.currentUser.uid : null),
-    };
+    const user = await ensureAuth();
+    if(!user){ alert("No hay sesión (anon). Revisa bloqueadores)."); return; }
+    // normalize & limits to satisfy rules
+    let estado = ($("#segEstado").value||"").toString().trim();
+    if(estado.length>40) estado = estado.slice(0,40);
+    let kam = ($("#segKAM").value||"").toString().trim();
+    if(kam.length>120) kam = kam.slice(0,120);
+    const comentarios = ($("#segComentarios").value||"").toString();
+    const proximaAccion = ($("#segFecha").value || null);
+
+    const payload = { estado, proximaAccion, comentarios, kam, createdAt: serverTimestamp(), createdBy: user.uid };
+    // Log para depurar con reglas estrictas
+    console.log("[seguimiento:payload]", payload);
     await addDoc(collection(db, "medicos", docId, "seguimientos"), payload);
     showToast("Guardado en Firestore ✓");
     $("#segComentarios").value = ""; $("#segKAM").value = "";
