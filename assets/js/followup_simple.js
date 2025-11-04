@@ -106,9 +106,20 @@ $("#segSimpleSave").addEventListener("click", async ()=>{
     const payload = { estado, proximaAccion, comentarios, kam, createdAt: serverTimestamp(), createdBy: user.uid };
     // Log para depurar con reglas estrictas
     console.log("[seguimiento:payload]", payload);
+    try{
     await addDoc(collection(db, "medicos", docId, "seguimientos"), payload);
-    showToast("Guardado en Firestore ✓");
-    $("#segComentarios").value = ""; $("#segKAM").value = "";
+  } catch(e) {
+    if (e && e.code === "permission-denied") {
+      const alt = Object.assign({}, payload);
+      alt.createdBY = alt.createdBy; delete alt.createdBy;
+      console.warn("[seguimiento:save] retry with createdBY", alt);
+      await addDoc(collection(db, "medicos", docId, "seguimientos"), alt);
+    } else {
+      throw e;
+    }
+  }
+  showToast("Guardado en Firestore ✓");
+  $("#segComentarios").value = ""; $("#segKAM").value = "";
   }catch(e){
     console.error("[seguimiento:save]", e);
     alert("No pude guardar en Firestore. Revisa reglas y conexión.");
