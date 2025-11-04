@@ -495,7 +495,7 @@ $('#saveModal').addEventListener('click', async ()=>{
   // Guardado 100% local
   addSeguimiento(payload);
   $('#modalBackdrop').style.display='none';
-  showToast('Guardado en Google Sheets ✓'); hideHistPanel();
+  showToast('Guardado en Firestore ✓'); hideHistPanel();
   // Actualiza semáforos y la tabla local
   try{ renderMedicos(); }catch(_){}
   try{ renderSeguimiento(); }catch(_){}
@@ -575,7 +575,7 @@ function exportSeguimientoXLSX(){
   URL.revokeObjectURL(url);
 }
 
-function showToast(msg='Guardado en Google Sheets ✓'){
+function showToast(msg='Guardado en Firestore ✓'){
   const box = document.getElementById('toastBox'); const t = document.getElementById('toast');
   if(!box||!t) return;
   t.textContent = msg;
@@ -933,7 +933,7 @@ $$('.tab').forEach(tab=>tab.addEventListener('click',()=>{
 <div id="toastBox" style="position:fixed;top:16px;right:16px;z-index:3000;display:none;">
   <div id="toast" style="background:#0A497B;color:#fff;padding:12px 14px;border-radius:10px;
     box-shadow:0 10px 30px rgba(10,73,123,.35);font-weight:600;letter-spacing:.2px;">
-    Guardado en Google Sheets ✓
+    Guardado en Firestore ✓
   </div>
 </div>
 
@@ -1519,9 +1519,9 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
 <script src="assets/js/resolve_docid_on_click.js?v=1"></script>
 <script src="assets/js/seg_panel_adapter.js?v=7"></script>
 <script src="assets/js/patch_followup_runtime.js?v=1"></script>
-<script src="assets/js/refresh_on_guardado.js?v=1"></script>
+<!-- <script src="assets/js/refresh_on_guardado.js?v=1"></script> -->
 <script type="module" src="assets/js/mobile_cache_refresh.js?v=20251103R2"></script>
-<script src="assets/js/refresh_button_hook.js?v=20251103RT"></script>
+<!-- <script src="assets/js/refresh_button_hook.js?v=20251103RT"></script> -->
 
 <script>
 /* === Renderer oficial para la tabla de MÉDICOS ==========================
@@ -1618,6 +1618,7 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
   <script src="assets/js/export_firestore_medicos.js?v=1"></script>
   <script src="assets/js/medicos_realtime_override.js?v=1"></script>
   <script src="assets/js/compat_followup_buttons.js?v=1"></script>
+<script type="module" src="assets/js/followup_simple.js?v=1"></script>
 </body>
 </html>
 
