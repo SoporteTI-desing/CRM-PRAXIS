@@ -280,7 +280,7 @@ document.getElementById("saveModal")?.addEventListener("click", async (ev) => {
     (document.querySelector("#modalKam")||{}).value = "";
 
     // Render historial actualizado
-    try { renderSeguimientos(_docId); } catch(_){}
+    try { renderSeguimientos(_docId); try{ if(window.watchSeguimientos){ window.watchSeguimientos(_docId); } }catch(_){} } catch(_){}
   } catch (e) {
     console.error("[seg guardar] ", e);
     alert("No pude guardar el seguimiento. Revisa la consola.");

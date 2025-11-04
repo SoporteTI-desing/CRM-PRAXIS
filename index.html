@@ -366,7 +366,7 @@ function renderMedicos(){
       <td>${r['Base']||r['base']||''}</td><td>${r['Estado']||r['estado']||''}</td><td>${r['Región']||r['Region']||r['region']||''}</td><td>${r['GERENTE/KAM']||r['KAM']||r['kam']||''}</td>
       <td class="center">
         <span class="dot ${(()=>{ const est=latestEstadoFor(nombre); return est?estadoColor(est):'gray'; })()}"></span>
-        <button class="btn btn-seg" data-id="" data-action="seguimiento" data-nombre="${nombre}" data-direccion="${dir}">+ Seguimiento</button>
+        <button type="button" class="btn btn-seg" data-id="${r._id}" data-action="seguimiento" data-nombre="${nombre}" data-direccion="${dir}">+ Seguimiento</button>
       </td>`;
     tr.querySelector('button').addEventListener('click',()=> openModal({Nombre:nombre, KAM:(r['GERENTE/KAM']||r['KAM']||r['kam']||'')}));
     tbMed.appendChild(tr);
@@ -1562,7 +1562,7 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
         <td>${m.estado || "-"}</td>
         <td>${m.region || "-"}</td>
         <td>${m.kam || "-"}</td>
-        <td><button class="btn ghost" data-id="${m.id || ""}">+ Seguimiento</button></td>
+        <td><button type="button" class="btn btn-seg" data-id="${r._id}" data-action="seguimiento" data-nombre="${nombre}" data-direccion="${dir}">+ Seguimiento</button></td>
       `;
       tbody.appendChild(tr);
     });
@@ -1620,6 +1620,7 @@ document.getElementById('btnCloseMed').addEventListener('click', ()=> document.g
   <script src="assets/js/compat_followup_buttons.js?v=1"></script>
   <script src="assets/js/robust_resolve_docid.js?v=1"></script>
   <script src="assets/js/guard_block_save_med.js?v=1"></script>
+  <script src="assets/js/hist_realtime_renderer.js?v=1"></script>
 </body>
 </html>
 

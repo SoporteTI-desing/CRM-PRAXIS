@@ -62,11 +62,13 @@
   function upgradeClicks(){
     document.addEventListener("click", async function(ev){
       const b = ev.target.closest(".btn-seg, .btnSeguimiento, button.btn, button");
+      window.__lastSegButton = b;
       if (!b) return;
       const label = (b.textContent||"").toLowerCase();
       if (!label.includes("seguimiento")) return;
 
       let id = b.getAttribute("data-id") || (b.dataset && b.dataset.id) || "";
+      if (id && /^[A-Za-z0-9_-]{20,}$/.test(id)) { window.__seg_docId = id; return; }
       // Firestore auto ids suelen ser 20+ alfanum
       const looksLikeId = /^[A-Za-z0-9_-]{20,}$/.test(id);
       if (!looksLikeId){

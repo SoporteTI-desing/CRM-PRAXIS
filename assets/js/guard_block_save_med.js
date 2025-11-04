@@ -22,3 +22,12 @@
     }catch(_){}
   }, true);
 })();
+// Prevent submits inside seguimiento modal
+document.addEventListener('submit', function(e){
+  try{
+    const modal = document.getElementById('modalBackdrop') || document.getElementById('seguimientoModal');
+    const cs = modal ? getComputedStyle(modal) : null;
+    const open = modal && cs && cs.display!=='none' && cs.visibility!=='hidden' && cs.opacity!=='0';
+    if(open){ e.preventDefault(); e.stopImmediatePropagation(); return false; }
+  }catch(_){}
+}, true);
