@@ -34,14 +34,34 @@ function updateCounter(total, fromCache) {
 
 // --- Render helper (si tu app expone renderMedicos, lo usamos)
 function renderIfAvailable(docs) {
-  if (typeof window.renderMedicos === "function") {
-    try { window.renderMedicos(docs); } catch {}
+  // Adapt docs -> filas esperadas por la tabla
+  const rows = (docs||[]).map(r => ({
+    _id: r.id,
+    'Nombre': r.Nombre || r.nombre || '',
+    'Teléfono': r['Teléfono'] || r.Telefono || r.telefono || r.tel || '',
+    'Dirección': r.Direccion || r.Dirección || r.direccion || '',
+    'Hospital': r.Hospital || r.hospital || '',
+    'Red Social': r['Red Social'] || r.redSocial || r.red || '',
+    'Especialidad': r.Especialidad || r.especialidad || '',
+    'Base': r.Base || r.base || '',
+    'Estado': r.Estado || r.estado || '',
+    'Región': r.Region || r.Región || r.region || '',
+    'GERENTE/KAM': r['GERENTE/KAM'] || r.KAM || r.kam || ''
+  }));
+  window.MED_BASE = rows;
+  if (typeof window.applyMedFilters === 'function') {
+    try { window.applyMedFilters(); } catch(e){ console.warn('applyMedFilters error', e); }
+  } else if (typeof window.renderMedicos === 'function') {
+    try { window.renderMedicos(); } catch(e){ console.warn('renderMedicos error', e); }
+  }
+  window.__medicosDocs = docs; // por si otros módulos lo consumen
+} catch {}
   }
   window.__medicosDocs = docs; // por si otros módulos lo consumen
 }
 
 // --- Realtime (onSnapshot) — SIEMPRE Firestore
-const q = query(collectionGroup(db, "medicos"));
+const q = query(collection(db, "medicos"));
 onSnapshot(q, { includeMetadataChanges: true }, (snap) => {
   const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   updateCounter(snap.size, snap.metadata.fromCache === true);
