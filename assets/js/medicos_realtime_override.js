@@ -48,6 +48,33 @@
           window.MED_BASE = snap.docs.map(adapt);
           // Actualiza badge
           if (badge) badge.textContent = (window.MED_BASE.length || 0) + ' médicos';
+
+          // Hidratar filtros (Estado, Región, KAM) desde Firestore
+          try {
+            const distinct = (arr) => Array.from(new Set(arr.filter(Boolean))).sort((a,b)=>(''+a).localeCompare((''+b),'es',{sensitivity:'base'}));
+            const estados = distinct(window.MED_BASE.map(r=> r.Estado || r.estado || ''));
+            const regiones= distinct(window.MED_BASE.map(r=> r.Región || r.Region || r.region || ''));
+            const kams    = distinct(window.MED_BASE.map(r=> r['GERENTE/KAM'] || r.KAM || r.kam || ''));
+            const fEstado = document.querySelector('#fEstado');
+            const fRegion = document.querySelector('#fRegion');
+            const fKam    = document.querySelector('#fKam');
+            if (fEstado) {
+              const sel = fEstado.value || '';
+              fEstado.innerHTML = '<option value="">Estado (todos)</option>' + estados.map(v=>`<option>${v}</option>`).join('');
+              if (sel) fEstado.value = sel;
+            }
+            if (fRegion) {
+              const sel = fRegion.value || '';
+              fRegion.innerHTML = '<option value="">Región (todas)</option>' + regiones.map(v=>`<option>${v}</option>`).join('');
+              if (sel) fRegion.value = sel;
+            }
+            if (fKam) {
+              const sel = fKam.value || '';
+              fKam.innerHTML = '<option value="">KAM (todos)</option>' + kams.map(v=>`<option>${v}</option>`).join('');
+              if (sel) fKam.value = sel;
+            }
+          } catch(_) {}
+
           // Reaplica filtros y render
           if (typeof window.applyMedFilters === 'function'){
             try { window.applyMedFilters(); } catch(_){}
