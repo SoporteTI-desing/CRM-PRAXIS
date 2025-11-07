@@ -36,7 +36,9 @@
           'Base': r.Base || r.base || '',
           'Estado': r.Estado || r.estado || '',
           'Región': r.Región || r.Region || r.region || '',
-          'GERENTE/KAM': r['GERENTE/KAM'] || r.KAM || r.kam || ''
+          'GERENTE/KAM': r['GERENTE/KAM'] || r.KAM || r.kam || '',
+          createdAt: r.createdAt || null,
+          updatedAt: r.updatedAt || r.lastUpdatedAt || null
         };
       }
 
@@ -49,6 +51,13 @@
         fsMod.onSnapshot(q, (snap)=>{
           // Construye la base global para filtros/exports
           window.MED_BASE = snap.docs.map(doc => adapt(doc));
+          const sortSel = document.querySelector('#sortOrder');
+          const order = (sortSel && sortSel.value) || 'desc';
+          window.MED_BASE.sort((a,b)=>{
+            const ta = (a.createdAt && a.createdAt.toDate) ? a.createdAt.toDate().getTime() : (a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0);
+            const tb = (b.createdAt && b.createdAt.toDate) ? b.createdAt.toDate().getTime() : (b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0);
+            return order==='asc' ? (ta - tb) : (tb - ta);
+          });
           // Actualiza badge
           if (badge) badge.textContent = (window.MED_BASE.length || 0) + ' médicos';
 
@@ -105,6 +114,13 @@
             const $ = (s)=>document.querySelector(s);
             const tbMed = $('#tableMedicos tbody'); const pageInfo=$('#pageInfoMed'); const pageSel=$('#pageSizeMed');
             let arr = Array.isArray(window.MED_FILT)&&window.MED_FILT.length? window.MED_FILT : (window.MED_BASE||[]);
+            const sortSel = document.querySelector('#sortOrder');
+            const order = (sortSel && sortSel.value) || 'desc';
+            arr = arr.slice().sort((a,b)=>{
+              const ta = (a.createdAt && a.createdAt.toDate) ? a.createdAt.toDate().getTime() : (a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0);
+              const tb = (b.createdAt && b.createdAt.toDate) ? b.createdAt.toDate().getTime() : (b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0);
+              return order==='asc' ? (ta - tb) : (tb - ta);
+            });
             const size = parseInt(pageSel?.value||'20',10); const total = arr.length; const pages=Math.max(1,Math.ceil(total/size));
             window.medPage = Math.min(window.medPage||1, pages);
             const start = (window.medPage-1)*size; const slice = arr.slice(start, start+size);
@@ -147,7 +163,8 @@
             document.querySelector('#nextMed')?.addEventListener('click', ()=>{ window.medPage=(window.medPage||1)+1; window.renderMedicos(); });
           }catch(_){}
 
-          if (typeof window.applyMedFilters === 'function'){
+          const _sortSel = document.querySelector('#sortOrder'); if(_sortSel){ _sortSel.addEventListener('change', ()=>{ try{ window.renderMedicos(); }catch(_){}}); }
+if (typeof window.applyMedFilters === 'function'){
             try { window.applyMedFilters(); } catch(_){}
           } else if (typeof window.renderMedicos === 'function'){
             try { window.renderMedicos(); } catch(_){}
@@ -160,8 +177,16 @@
         const col = fsMod.collection(db, "medicos");
         const snap = await fsMod.getDocs(col);
         window.MED_BASE = snap.docs.map(doc => adapt(doc));
+          const sortSel = document.querySelector('#sortOrder');
+          const order = (sortSel && sortSel.value) || 'desc';
+          window.MED_BASE.sort((a,b)=>{
+            const ta = (a.createdAt && a.createdAt.toDate) ? a.createdAt.toDate().getTime() : (a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0);
+            const tb = (b.createdAt && b.createdAt.toDate) ? b.createdAt.toDate().getTime() : (b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0);
+            return order==='asc' ? (ta - tb) : (tb - ta);
+          });
         if (badge) badge.textContent = (window.MED_BASE.length || 0) + ' médicos';
-        if (typeof window.applyMedFilters === 'function'){
+        const _sortSel = document.querySelector('#sortOrder'); if(_sortSel){ _sortSel.addEventListener('change', ()=>{ try{ window.renderMedicos(); }catch(_){}}); }
+if (typeof window.applyMedFilters === 'function'){
           try { window.applyMedFilters(); } catch(_){}
         } else if (typeof window.renderMedicos === 'function'){
           try { window.renderMedicos(); } catch(_){}
