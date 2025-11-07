@@ -30,9 +30,10 @@
             Estado: r.Estado || r.estado || "",
             Region: r.Región || r.Region || r.region || "",
             KAM: r["GERENTE/KAM"] || r.KAM || r.kam || "",
+            FechaCreacion: (r.createdAt && r.createdAt.toDate) ? r.createdAt.toDate().toISOString().slice(0,19).replace("T"," ") : (r.createdAt||""),
+            UltimaActualizacion: (r.updatedAt && r.updatedAt.toDate) ? r.updatedAt.toDate().toISOString().slice(0,19).replace("T"," ") : (r.updatedAt||r.lastUpdatedAt||""),
             UltimoEstado: r.ultimoEstado || "",
-            UltimoSeguimiento: r.ultimoSeguimiento ? (r.ultimoSeguimiento.toDate ? r.ultimoSeguimiento.toDate().toISOString().slice(0,19).replace('T',' ') : r.ultimoSeguimiento) : ""
-          });
+            UltimoSeguimiento: r.ultimoSeguimiento ? (r.ultimoSeguimiento.toDate ? r.ultimoSeguimiento.toDate().toISOString().slice(0,19).replace("T"," ") : r.ultimoSeguimiento) : ""});
         });
         return rows;
       }

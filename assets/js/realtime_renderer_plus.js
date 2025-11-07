@@ -7,10 +7,26 @@ const qInput  = $("#qMed");
 const fEstado = $("#fEstado");
 const fRegion = $("#fRegion");
 const fKAM    = $("#fKAM");
+const sortSel = $("#sortOrder");
 const pageInfo= $("#pageInfoMed");
 
 let ALL = [];
 let VIEW = [];
+
+function tsToMillis(v){
+  if(!v) return 0;
+  if(v.toMillis) return v.toMillis();
+  if(v.toDate) return v.toDate().getTime();
+  if(v instanceof Date) return v.getTime();
+  if(typeof v === "number") return v;
+  const t = Date.parse(v); return isNaN(t)?0:t;
+}
+function tsToStr(v){
+  const d = (v && v.toDate) ? v.toDate() : (v instanceof Date ? v : new Date(tsToMillis(v)));
+  if(!d || isNaN(d)) return "";
+  const pad = n => String(n).padStart(2,"0");
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
 
 const norm = (v) => String(v || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
@@ -57,6 +73,15 @@ function applyFilters() {
   if (reg && reg !== "todas") list = list.filter(m => String(m.region||"") === reg);
   if (kam && kam !== "todos") list = list.filter(m => String(m.kam||"") === kam);
 
+  
+  // Ordenar por createdAt según selector
+  const order = (sortSel?.value || "desc");
+  list.sort((a,b)=>{
+    const ta = tsToMillis(a.createdAt);
+    const tb = tsToMillis(b.createdAt);
+    return order === "asc" ? (ta - tb) : (tb - ta);
+  });
+
   VIEW = list;
   paint(VIEW);
 }
@@ -76,9 +101,10 @@ window.renderMedicos = function(docs) {
   el && el.addEventListener("input", applyFilters);
   el && el.addEventListener("change", applyFilters);
 });
+if (sortSel) { sortSel.addEventListener("change", applyFilters); }
 
 function toCSV(rows) {
-  const headers = ["nombre","telefono","direccion","hospital","redSocial","especialidad","base","estado","region","kam"];
+  const headers = ["nombre","telefono","direccion","hospital","redSocial","especialidad","base","estado","region","kam","FechaCreacion","UltimaActualizacion"];
   const esc = (v) => {
     const s = String(v ?? "");
     if (/[\",;\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
@@ -86,7 +112,7 @@ function toCSV(rows) {
   };
   const lines = [headers.join(",")];
   for (const m of rows) {
-    lines.push([m.nombre, m.telefono, m.direccion, m.hospital, m.redSocial, m.especialidad, m.base, m.estado, m.region, m.kam].map(esc).join(","));
+    lines.push([m.nombre, m.telefono, m.direccion, m.hospital, m.redSocial, m.especialidad, m.base, m.estado, m.region, m.kam, tsToStr(m.createdAt), tsToStr(m.updatedAt || m.lastUpdatedAt)].map(esc).join(","));
   }
   return "\\ufeff" + lines.join("\\n");
 }
